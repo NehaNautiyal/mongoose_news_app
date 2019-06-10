@@ -1,4 +1,5 @@
 var express = require("express");
+var mongoose = require("mongoose");
 
 var PORT = process.env.PORT || 3000;
 
@@ -17,10 +18,12 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// Import routes and give the server access to them.
-var routes = require("./controllers/catsController.js");
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/sciencenewsscraper", { useNewUrlParser: true });
 
-app.use(routes);
+// Import routes and give the server access to them.
+require("./routes/htmlRoutes")(app);
+// require("./routes/apiRoutes")(app);
 
 app.listen(PORT, function() {
   console.log("App now listening at localhost:" + PORT);
