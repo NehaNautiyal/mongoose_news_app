@@ -19,7 +19,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/sciencenewsscraper", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost/sciencescraper", { useNewUrlParser: true });
 
 // Import routes and give the server access to them.
 require("./routes/htmlRoutes")(app);

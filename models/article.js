@@ -11,6 +11,10 @@ var ArticleSchema = new Schema({
     type: String,
     required: true
   },
+  img: {
+    type: String,
+    required: true
+  },
   // `link` is required and of type String
   link: {
     type: String,
@@ -24,6 +28,15 @@ var ArticleSchema = new Schema({
     ref: "Note"
   }
 });
+
+ArticleSchema.methods.completeImgSrc = function() {
+  this.img = "http://www.sciencedaily.com" + this.img;
+  return this.img;
+};
+ArticleSchema.methods.completeLink = function() {
+  this.link = "http://www.sciencedaily.com" + this.link;
+  return this.link;
+};
 
 // This creates our model from the above schema, using mongoose's model method
 var Article = mongoose.model("Article", ArticleSchema);
