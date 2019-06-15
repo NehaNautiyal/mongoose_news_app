@@ -83,6 +83,7 @@ module.exports = function (app) {
         // grabs all of the articles
         db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true }, { new: true })
             .then(function (articles) {
+                // res.send({redirectUrl: "/saved"})
                 res.json(articles);
             })
             .catch(function (error) {
@@ -90,7 +91,7 @@ module.exports = function (app) {
             });
     });
 
-    // Route to post to saved articles
+    // Route to get only saved articles
     app.get("/articles/saved", function (req, res) {
         db.Article.find({saved: true})
             .then(function (articles) {
@@ -103,6 +104,11 @@ module.exports = function (app) {
 
     app.get("/saved", function (req, res) {
         res.render("saved");
+    });
+
+    app.delete("/article/:id", function (req, res) {
+        db.Article.findByIdAndDelete
+        res.render(articles);
     });
 
     // Route for saving/updating an Article's associated Note
