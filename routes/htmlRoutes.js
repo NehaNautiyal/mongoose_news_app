@@ -33,7 +33,7 @@ module.exports = function (app) {
                 result.link = $(this)
                     .find("a")
                     .attr("href");
-                
+
                 var article = new Article(result);
                 article.completeImgSrc();
                 article.completeLink();
@@ -49,7 +49,8 @@ module.exports = function (app) {
             });
 
             // Send a message to the client
-            res.send("Scrape Complete");
+            res.redirect("/");
+            
         });
     });
 
@@ -62,6 +63,61 @@ module.exports = function (app) {
             })
             .catch(function (error) {
                 res.json(error);
+            });
+    });
+
+    // Route for deleting all Articles from the db
+    app.delete("/articles", function (req, res) {
+        // grabs all of the articles
+        db.Article.deleteMany()
+            .then(function (articles) {
+                res.json(articles);
+            })
+            .catch(function (error) {
+                res.json(error);
+            });
+    });
+
+    // Route for updating articles that are saved from the db
+    app.put("/articles/:id", function (req, res) {
+        // grabs all of the articles
+        db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true }, { new: true })
+            .then(function (articles) {
+                res.json(articles);
+            })
+            .catch(function (error) {
+                res.json(error);
+            });
+    });
+
+    // Route to post to saved articles
+    app.get("/saved", function (req, res) {
+        db.Article.find({})
+            .then(function (articles) {
+                res.render("saved", articles);
+            })
+            .catch(function (error) {
+                res.json(error);
+            });
+    })
+
+    // Route for saving/updating an Article's associated Note
+    app.post("/saved/:id", function (req, res) {
+        // Create a new note and pass the req.body to the entry
+        db.Note.create(req.body)
+            .then(function (dbNote) {
+                // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
+                // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
+                // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+                return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+            })
+            .then(function (dbArticle) {
+                // If we were able to successfully update an Article, send it back to the client
+                res.json(dbArticle);
+            })
+            .catch(function (err) {
+                // If an error occurred, send it to the client
+                res.json(err);
             });
     });
 
