@@ -9,7 +9,6 @@ $(document).ready(function () {
     }
 
     function deleteAll() {
-
         $.ajax({
             method: "DELETE",
             url: "/articles/"
@@ -62,7 +61,7 @@ $(document).ready(function () {
     function showSavedArticles() {
         $(".card").remove();
         // Grab the articles as a json
-        $.getJSON("/saved", function (data) {
+        $.getJSON("/articles/saved", function (data) {
             if (!data || data.length === 0) {
                 $("#saved").addClass("center").append("There are no saved articles! Try saving some...")
             } else {
@@ -86,7 +85,7 @@ $(document).ready(function () {
                     link.addClass("btn btn-info article").attr("href", data[i].link).text(data[i].title);
 
                     cardBody.append(link);
-                    newCard.append(img, button, cardBody);
+                    newCard.append(img, cardBody);
                     $("#saved").append(newCard);
 
                     // Display the apropos information on the page

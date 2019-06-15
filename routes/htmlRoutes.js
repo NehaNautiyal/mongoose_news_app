@@ -91,15 +91,19 @@ module.exports = function (app) {
     });
 
     // Route to post to saved articles
-    app.get("/saved", function (req, res) {
-        db.Article.find({})
+    app.get("/articles/saved", function (req, res) {
+        db.Article.find({saved: true})
             .then(function (articles) {
-                res.render("saved", articles);
+                res.json(articles);
             })
             .catch(function (error) {
                 res.json(error);
             });
-    })
+    });
+
+    app.get("/saved", function (req, res) {
+        res.render("saved");
+    });
 
     // Route for saving/updating an Article's associated Note
     app.post("/saved/:id", function (req, res) {
