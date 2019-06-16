@@ -5,12 +5,12 @@ $(document).ready(function () {
     $("#scrapeNew").on("click", scrapeNew);
     $(document).on("click", ".save", saveArticle);
     $(document).on("click", "#deleteSaved", clearSaved);
-    // $(document).on("click", "#comment", addNote);
+    $(document).on("click", "#comment", populateNote);
+    $(document).on("click", "#saveNewNote", addNote);
 
-if ($("#saved").length > 0) {
-    console.log("I see saved!")
-    showSavedArticles();
-}
+    if ($("#saved").length > 0) {
+        showSavedArticles();
+    }
 
     function scrapeNew() {
         window.location.href = "/scrape";
@@ -83,20 +83,21 @@ if ($("#saved").length > 0) {
                     img.addClass("card-img-top").attr("src", data[i].img).css("z-index", 0);
 
                     var delButton = $("<button>");
-                    delButton.text("Delete from Saved").attr({"data-id": data[i]._id,
-                                                            "id": "deleteSaved"}).addClass("btn center").css({ "z-index": 1 },
-                        { "position": "absolute" });
+                    delButton.text("Delete from Saved").attr({
+                        "data-id": data[i]._id,
+                        "id": "deleteSaved"
+                    }).addClass("btn center");
 
                     var commentButton = $("<button>");
-                    commentButton.text("COMMENT").attr({"data-id": data[i]._id,
-                                                        "id": "comment"}).addClass("btn center").css({ "z-index": 1 },
-                        { "position": "absolute" });
+                    commentButton.text("COMMENT").attr({
+                        "data-id": data[i]._id,
+                        "id": "comment",
+                        "data-toggle": "modal",
+                        "data-target": "#articleNote"
+                    }).addClass("btn center");
 
                     var cardBody = $("<div>");
                     cardBody.addClass("card-body");
-
-                    // var h5 = $("<h5>");
-                    // h5.addClass("card-title").text(data[i].title);
 
                     var link = $("<a>");
                     link.addClass("btn btn-info article").attr("href", data[i].link).text(data[i].title);
@@ -104,9 +105,6 @@ if ($("#saved").length > 0) {
                     cardBody.append(link);
                     newCard.append(img, delButton, commentButton, cardBody);
                     $("#saved").append(newCard);
-
-                    // Display the apropos information on the page
-                    // $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<img src=" + data[i].img + '>' + "<br />" + data[i].link + "</p>");
                 }
             }
         });
@@ -117,8 +115,8 @@ if ($("#saved").length > 0) {
         $(this).parent().remove();
 
         $.ajax({
-            method: "DELETE",
-            url: "/articles/" + id,
+            method: "PUT",
+            url: "/articles/saved/" + id,
             data: {
                 saved: false
             }
@@ -138,8 +136,43 @@ if ($("#saved").length > 0) {
             }
         }).then(showSavedArticles)
             .then(function (data) {
-            //     // With that done
-                window.location = data.redirectUrl;
+                //     // With that done
+                window.location.href = "/saved";
+            });
+    }
+
+    function populateNote() {
+        let id = $(this).attr("data-id");
+        console.log(id);
+
+        $.ajax({
+            method: "GET",
+            url: "/articles/saved/" + id
+          })
+            // With that done, add the note information to the page
+            .then(function(data) {
+                console.log(data);
+                $("#articleName").append(`Note for ${data.title}`);
+            });
+    }
+    function addNote() {
+        let id = $(this).attr("data-id");
+        console.log($("textarea#articleNote").val());
+
+        $.ajax({
+            method: "POST",
+            url: "/articles/" + id,
+            data: {
+              // Value taken from note textarea
+              body: $("textarea#articleNote").val()
+            }
+          })
+            // With that done
+            .then(function(data) {
+              // Log the response
+              console.log(data);
+              // Empty the notes section
+              $("textarea#articleNote").empty();
             });
     }
 

@@ -1,6 +1,7 @@
 // Require all models
 var db = require("../models");
 var Article = require("../models/article");
+var Note = require("../models/note");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
@@ -106,13 +107,39 @@ module.exports = function (app) {
         res.render("saved");
     });
 
-    app.delete("/article/:id", function (req, res) {
-        db.Article.findByIdAndDelete
-        res.render(articles);
+    app.put("/articles/saved/:id", function (req, res) {
+        // grabs all of the articles
+        db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: false }, { new: true })
+            .then(function (articles) {
+                // res.send({redirectUrl: "/saved"})
+                res.json(articles);
+            })
+            .catch(function (error) {
+                res.json(error);
+            });
     });
 
+    app.get("/articles/saved/:id", function (req, res) {
+        // grabs all of the articles
+        db.Article.findOne({ _id: req.params.id })
+            .then(function (articles) {
+                res.json(articles);
+            })
+            .catch(function (error) {
+                res.json(error);
+            });
+    });
+
+    // app.delete("/article/saved/:id", function (req, res) {
+    //     db.Article.remove({_id: req.params.id})
+    //     .then(function(articles){
+    //         res.render(articles);
+    //     });
+        
+    // });
+
     // Route for saving/updating an Article's associated Note
-    app.post("/saved/:id", function (req, res) {
+    app.post("/articles/:id", function (req, res) {
         // Create a new note and pass the req.body to the entry
         db.Note.create(req.body)
             .then(function (dbNote) {
