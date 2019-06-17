@@ -153,10 +153,12 @@ $(document).ready(function () {
             .then(function(data) {
                 console.log(data);
                 $("#articleName").append(`Note for ${data.title}`);
+                $("#saveNewNote").attr("data-id", id);
             });
     }
     function addNote() {
         let id = $(this).attr("data-id");
+        console.log(id);
         console.log($("textarea#articleNote").val());
 
         $.ajax({
