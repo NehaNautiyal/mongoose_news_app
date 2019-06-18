@@ -173,9 +173,17 @@ $(document).ready(function () {
             .then(function(data) {
               // Log the response
               console.log(data);
+              addNoteButton(id);
               // Empty the notes section
               $("textarea#articleNote").empty();
             });
+    }
+
+    function addNoteButton(id) {
+        console.log(id);
+        var noteButton = $("<button>");
+        noteButton.append("View saved note").addClass("center");
+        $('[data-id=' + id + '][#deleteSaved]').prepend(noteButton);
     }
 
 });
